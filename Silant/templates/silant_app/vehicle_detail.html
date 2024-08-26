@@ -1,0 +1,99 @@
+{% extends "flatpages/default.html" %}
+
+{% block panel %}
+<a class="nav-item nav-link" href="{% url 'vehicles-home' %}">Общая инфо</a>
+<a class="nav-item nav-link" href="{% url 'maintenance' %}">TO</a>
+<a class="nav-item nav-link" href="{% url 'claims' %}">Рекламации</a>
+{% endblock %}
+
+{% block title %}Home
+{% endblock %}
+
+{% block user %}
+{% if user.is_authenticated %}
+Hi {{ user.username }}!
+Your role is {{ user.role }}!
+{% else %}
+<p>You are not logged in</p>
+{% endif %}
+{% endblock %}
+
+{% block vehicles %}
+{% if user.is_authenticated and user.role == 'Manager'%}
+    {% if vehicle %}
+        <div class="media-body">
+            <table class="padding-table-columns">
+                <tr>
+                    <td style="font-weight:bold">Модель техники</td>
+                    <td style="font-weight:bold">Зав. № машины</td>
+                    <td style="font-weight:bold">Модель двигателя</td>
+                    <td style="font-weight:bold">Зав. № двигателя</td>
+                    <td style="font-weight:bold">Модель трансмиссии (производитель, артикул)</td>
+                    <td style="font-weight:bold">Зав. № трансмиссии</td>
+                    <td style="font-weight:bold">Модель ведущего моста</td>
+                    <td style="font-weight:bold">Зав. № ведущего моста</td>
+                    <td style="font-weight:bold">Модель управляемого моста</td>
+                    <td style="font-weight:bold">Зав. № управляемого моста</td>
+                    <td style="font-weight:bold">Договор поставки №, дата</td>
+                    <td style="font-weight:bold">Дата отгрузки с завода</td>
+                    <td style="font-weight:bold">Покупатель</td>
+                    <td style="font-weight:bold">Грузополучатель (конечный потребитель)</td>
+                    <td style="font-weight:bold">Адрес поставки (эксплуатации)</td>
+                    <td style="font-weight:bold">Комплектация (доп. опции)</td>
+                    <td style="font-weight:bold">Сервисная компания</td>
+                    <td style="font-weight:bold"></td>
+                </tr>
+                <tr>
+                    <td class="vehicleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.vehicleModel.id }}','{{ vehicle.vehicleModel }}', 'vehicle_model', 'Модель техники')">{{ vehicle.vehicleModel }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.vehicleNumber }}</a></p></td>
+                    <td class="engineModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.engineModel.id }}','{{ vehicle.engineModel }}', 'engine_model', 'Модель двигателя')">{{ vehicle.engineModel }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.engineNumber }}</a></p></td>
+                    <td class="transmissionModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.transmissionModel.id }}','{{ vehicle.transmissionModel }}', 'transmission_model', 'Модель трансмиссии')">{{ vehicle.transmissionModel }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.transmissionNumber }}</a></p></td>
+                    <td class="driveAxleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.driveAxleModel.id }}','{{ vehicle.driveAxleModel }}', 'drive_axle_model', 'Модель ведущего моста')">{{ vehicle.driveAxleModel }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.driveAxleNumber }}</a></p></td>
+                    <td class="steeringAxleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.steeringAxleModel.id }}','{{ vehicle.steeringAxleModel }}', 'steering_axle_model', 'Модель управляемого моста')">{{ vehicle.steeringAxleModel }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.steeringAxleNumber }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.deliveryContract_number_date }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.shipmentDate }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.client.first_name }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.consignee }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.deliveryAddress }}</a></p></td>
+                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="#">{{ vehicle.equipment }}</a></p></td>
+                    <td class="serviceCompanyInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.serviceCompany.id }}','{{ vehicle.serviceCompany }}', 'service_company', 'Сервисная компания')">{{ vehicle.serviceCompany }}</a></p></td>
+                    <td><a class="nav-item nav-link" href="{% url 'vehicle-update' vehicle.id%}">Редактировать</a></td>
+                </tr>
+
+           </table>
+    {% else %}
+        <h2>No vehicles</h2>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block popup %}
+<div class="user">
+     <div class="showInfo" >
+        <div class="user" style="padding: 50px 0px 50px 0px;">
+            Tаблица с данными (выдача результата)<span id="tableName"></span>
+        </div>
+        <table class="tableVehicles" >
+            <tr style="background-color: #163E6C">
+                <td style="text-align: center;">id</td>
+                <td style="text-align: center;">Наименование</td>
+                <td style="text-align: center;">Описание</td>
+            </tr>
+            <tr>
+                <td class="id" style="text-align: center;"></td>
+                <td class="name" style="text-align: center;"></td>
+                <td class="description" style="text-align: center;"></td>
+            </tr>
+        </table>
+        <div class="tableChangeButtonsContainer">
+            <button class="tableChangeButtons" id="closeInfoPanel">Close</button>
+        </div>
+     </div>
+</div>
+{% endblock %}

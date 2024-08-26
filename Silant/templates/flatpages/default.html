@@ -1,0 +1,54 @@
+{% load static %}
+
+<!DOCTYPE HTML>
+<html lang="en">
+
+  <head>
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/images/Logotype accent RGB 1.jpg' %}" >
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+  </head>
+
+  <header class="my_header">
+    <div>
+        <img class="logo" src="{% static 'assets/images/silant_logo.png' %}"  alt="silant_logo" />
+    </div>
+
+    <div class="headerInfo">
+        <div >
+            +7-8352-20-12-09, telegram
+        </div>
+        <div class="headerInfoText">
+            Электронная сервисная книжка <a class="main" style="" href="{% url 'vehicles-home' %}">"Мой Силант"</a>
+        </div>
+    </div>
+    {% if not request.user.is_authenticated %}
+        <a href="{% url 'login' %}"><button class="headerAuthorizationButton">Log In</button></a>
+    {% else %}
+        <a href="{% url 'logout' %}"><button class="headerAuthorizationButton">Log Out</button></a>
+    {% endif %}
+  </header>
+
+  <body>
+    <div class="global_container">
+      {% block user %} {% block panel %} {% endblock %} {% endblock %}
+      {% block vehicles %} {% endblock %}
+      {% block maintenance %} {% endblock %}
+      {% block claims_block %} {% endblock %}
+      {% block vehicles_u %} {% endblock %}
+      {% block content %} {% endblock %}
+      {% block popup %} {% endblock %}
+    </div>
+    <script type="text/javascript" src="{% static 'js/scripts.js' %}"></script>
+  </body>
+
+  <footer class="my_footer">
+    <div>
+        +7-8352-20-12-09, telegram
+    </div>
+    <div>
+        "Мой Силант" 2022
+    </div>
+  </footer>
+
+</html>
+

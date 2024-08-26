@@ -1,0 +1,98 @@
+{% extends "flatpages/default.html" %}
+{% load custom_filters %}
+
+
+{% block user %}
+<div class="panel_container">
+    {% if user.is_authenticated %}
+            <div class="panel_text">
+                <p>Добро пожаловать {{ user.first_name }}! (Роль: <a class="role" style="color: #AA72B9" >{{ user.role }}</a>)</p>
+                <p>Информация о проведенных ТО Вашей техники</p>
+            </div>
+            {% block panel %}
+                <div class="panel">
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'vehicles-home' %}">Общая инфо</a></p>
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'claims' %}">Рекламации</a></p>
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'maintenance-create' %}">Создать техобслуживание</a></p>
+                </div>
+            {% endblock %}
+    {% else %}
+            <div class="unauthorized">
+                <p class="links">Внимание! Для доступа к Вашей технике необходима <a style="color: #AA72B9" href="{% url 'login' %}">авторизация</a>.</p>
+                <p class="links">Хотите продолжить <a style="color: #AA72B9" href="{% url 'unauthorized-home' %}">без авторизации</a>?</p>
+            </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block maintenance %}
+{% if user.is_authenticated %}
+        <div class="form_container">
+            <form class="my_filter" action="" method="get">
+                {{ filterset_maintenance.form.as_p }}
+                <input type="submit" value="Search" />
+            </form>
+        </div>
+    {% if maintenances %}
+        <div class="big-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="font-weight:bold">Зав. № машины</th>
+                        <th style="font-weight:bold">Вид ТО</th>
+                        <th style="font-weight:bold">Дата проведения ТО</th>
+                        <th style="font-weight:bold">Наработка, м/час</th>
+                        <th style="font-weight:bold">№ заказ-наряда</th>
+                        <th style="font-weight:bold">Дата заказ-наряда</th>
+                        <th style="font-weight:bold">Организация, проводившая ТО</th>
+                    </tr>
+                </thead>
+                {% for maintenance in maintenances %}
+                    <tbody>
+                        {% if request.user == maintenance.vehicle.client or request.user == maintenance.vehicle.serviceCompany.user or request.user.role == 'Manager' %}
+                            <tr>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="{% url 'maintenance-update' maintenance.id%}" >{{ maintenance.vehicle.vehicleNumber }} / Редактировать</a></p></td>
+                                <td class="maintenanceTypeInfo"><p class="article-content"><a href='#' onclick="Info('{{ maintenance.maintenanceType.id }}', '{{ maintenance.maintenanceType }}', 'maintenance_type', 'Вид ТО')">{{ maintenance.maintenanceType }}</a></p></td>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ maintenance.maintenanceDate|date:"d.m.Y" }}</a></p></td>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ maintenance.operatingTime }}</a></p></td>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ maintenance.workOrderNumber }}</a></p></td>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ maintenance.workOrderDate|date:"d.m.Y" }}</a></p></td>
+                                <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ maintenance.maintenanceCompany }}</a></p></td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                {% endfor %}
+           </table>
+    {% else %}
+        <h2>Информация ТО по Вашему запросу не найдена</h2>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block popup %}
+<div class="popup">
+     <div class="showInfo" >
+        <div class="title_row" style="padding: 50px 0px 50px 0px;">
+            Tаблица с данными (выдача результата)<span id="tableName"></span>
+        </div>
+        <table class="tableVehicles" >
+            <tr style="background-color: #163E6C">
+                <td style="text-align: center;">id</td>
+                <td style="text-align: center;">Наименование</td>
+                <td style="text-align: center;">Описание</td>
+            </tr>
+            <tr>
+                <td class="id" style="text-align: center;"></td>
+                <td class="name" style="text-align: center;"></td>
+                <td class="description" style="text-align: center;"></td>
+            </tr>
+        </table>
+        <div class="tableChangeButtonsContainer">
+            <button class="table_button" id="closeInfoPanel">Close</button>
+        </div>
+     </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "flatpages/default.html" %}
+{% load custom_filters %}
+
+
+{% block user %}
+<div class="panel_container">
+    <div class="panel_text"><p>Проверьте комплектацию и технические характеристики техники Силант</p></div>
+</div>
+{% endblock %}
+
+
+{% block vehicles_u %}
+        <div class="form_container">
+            <form class="my_filter" action="" method="get">
+                {{ filterset_vehicle_un.form.as_p }}
+                <input type="submit" value="Search" />
+            </form>
+        </div>
+    {% if vehicles_un %}
+        <div class="big-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="font-weight:bold">Модель техники</th>
+                        <th style="font-weight:bold">Зав. № машины</th>
+                        <th style="font-weight:bold">Модель двигателя</th>
+                        <th style="font-weight:bold">Зав. № двигателя</th>
+                        <th style="font-weight:bold">Модель трансмиссии (производитель, артикул)</th>
+                        <th style="font-weight:bold">Зав. № трансмиссии</th>
+                        <th style="font-weight:bold">Модель ведущего моста</th>
+                        <th style="font-weight:bold">Зав. № ведущего моста</th>
+                        <th style="font-weight:bold">Модель управляемого моста</th>
+                        <th style="font-weight:bold">Зав. № управляемого моста</th>
+                    </tr>
+                </thead>
+                {% for vehicle in vehicles_un %}
+                     <tbody>
+                         <tr>
+                             <td class="vehicleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.vehicleModel.id }}','{{ vehicle.vehicleModel }}', 'vehicle_model', 'Модель техники')">{{ vehicle.vehicleModel }}</a></p></td>
+                             <td><p class="article-content"><a class="mr-2" style="color:#AA72B9">{{ vehicle.vehicleNumber }}</a></p></td>
+                             <td class="engineModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.engineModel.id }}','{{ vehicle.engineModel }}', 'engine_model', 'Модель двигателя')">{{ vehicle.engineModel }}</a></p></td>
+                             <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ vehicle.engineNumber }}</a></p></td>
+                             <td class="transmissionModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.transmissionModel.id }}','{{ vehicle.transmissionModel }}', 'transmission_model', 'Модель трансмиссии')">{{ vehicle.transmissionModel }}</a></p></td>
+                             <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ vehicle.transmissionNumber }}</a></p></td>
+                             <td class="driveAxleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.driveAxleModel.id }}','{{ vehicle.driveAxleModel }}', 'drive_axle_model', 'Модель ведущего моста')">{{ vehicle.driveAxleModel }}</a></p></td>
+                             <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ vehicle.driveAxleNumber }}</a></p></td>
+                             <td class="steeringAxleModelInfo"><p class="article-content"><a href='#' onclick="Info('{{ vehicle.steeringAxleModel.id }}','{{ vehicle.steeringAxleModel }}', 'steering_axle_model', 'Модель управляемого моста')">{{ vehicle.steeringAxleModel }}</a></p></td>
+                             <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ vehicle.steeringAxleNumber }}</a></p></td>
+                         </tr>
+                     </tbody>
+                {% endfor %}
+           </table>
+    {% else %}
+        <h2>Данные по Вашему запросу не найдены</h2>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block popup %}
+<div class="popup">
+     <div class="showInfo" >
+        <div class="title_row" style="padding: 50px 0px 50px 0px;">
+            Tаблица с данными (выдача результата)<span id="tableName"></span>
+        </div>
+        <table class="tableVehicles" >
+            <tr style="background-color: #163E6C">
+                <td style="text-align: center;">id</td>
+                <td style="text-align: center;">Наименование</td>
+                <td style="text-align: center;">Описание</td>
+            </tr>
+            <tr>
+                <td class="id" style="text-align: center;"></td>
+                <td class="name" style="text-align: center;"></td>
+                <td class="description" style="text-align: center;"></td>
+            </tr>
+        </table>
+        <div class="tableChangeButtonsContainer">
+            <button class="table_button" id="closeInfoPanel">Close</button>
+        </div>
+     </div>
+</div>
+{% endblock %}

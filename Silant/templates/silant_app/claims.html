@@ -1,0 +1,109 @@
+{% extends "flatpages/default.html" %}
+
+
+{% block user %}
+<div class="panel_container">
+    {% if user.is_authenticated %}
+            <div class="panel_text">
+                <p>Добро пожаловать {{ user.first_name }}! (Роль: <a class="role" style="color: #AA72B9">{{ user.role }}</a>)</p>
+                <p>Рекламации по Вашей технике</p>
+            </div>
+            {% block panel %}
+                <div class="panel">
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'vehicles-home' %}">Общая инфо</a></p>
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'maintenance' %}">TO</a></p>
+                    {% if user.role != 'Client' %}
+                    <p class="links"><a class="nav-item nav-link" href="{% url 'claims-create' %}">Создать рекламацию</a></p>
+                    {% endif %}
+                </div>
+            {% endblock %}
+    {% else %}
+            <div class="unauthorized">
+                <p class="links">Внимание! Для доступа к Вашей технике необходима <a style="color: #AA72B9" href="{% url 'login' %}">авторизация</a>.</p>
+                <p class="links">Хотите продолжить <a class="" href="{% url 'unauthorized-home' %}">без авторизации</a>?</p>
+            </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+{% block claims_block %}
+{% if user.is_authenticated %}
+        <div class="form_container">
+            <form class="my_filter" action="" method="get">
+                {{ filterset_claims.form.as_p }}
+                <input type="submit" value="Search" />
+            </form>
+        </div>
+        {% if claims %}
+            <div class="big-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="font-weight:bold">Зав. № машины</th>
+                            <th style="font-weight:bold">Дата отказа</th>
+                            <th style="font-weight:bold">Наработка, м/час</th>
+                            <th style="font-weight:bold">Узел отказа</th>
+                            <th style="font-weight:bold">Описание отказа</th>
+                            <th style="font-weight:bold">Способ восстановления</th>
+                            <th style="font-weight:bold">Используемые запасные части</th>
+                            <th style="font-weight:bold">Дата восстановления</th>
+                            <th style="font-weight:bold">Время простоя техники</th>
+                            <th style="font-weight:bold">Сервисная компания</th>
+                        </tr>
+                    </thead>
+                    {% for claim in claims %}
+                         <tbody>
+                            {% if request.user == claim.vehicle.client or request.user == claim.vehicle.serviceCompany.user or request.user.role == 'Manager' %}
+                                <tr>
+                                    {% if request.user.role != 'Client' %}
+                                        <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" href="{% url 'claims-update' claim.id%}">{{ claim.vehicle.vehicleNumber }} / Редактировать</a></p></td>
+                                    {% else %}
+                                        <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.vehicle.vehicleNumber }}</a></p></td>
+                                    {% endif %}
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.claimDate|date:"d.m.Y" }}</a></p></td>
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.operatingTime }}</a></p></td>
+                                    <td class="failureNodeInfo"><p class="article-content"><a href='#' onclick="Info('{{ claim.failureNode.id }}', '{{ claim.failureNode }}', 'failure_node', 'Узел отказа')">{{ claim.failureNode }}</a></p></td>
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.failureDescription }}</a></p></td>
+                                    <td class="repairingMethodInfo"><p class="article-content"><a href='#' onclick="Info('{{ claim.repairingMethod.id }}', '{{ claim.repairingMethod }}', 'repairing_method', 'Способ восстановления')">{{ claim.repairingMethod }}</a></p></td>
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.usedSpareParts }}</a></p></td>
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.repairingDate|date:"d.m.Y" }}</a></p></td>
+                                    <td><p class="article-content"><a class="mr-2" style="color:#AA72B9" >{{ claim.vehicleDowntime }}</a></p></td>
+                                    <td class="serviceCompanyInfo"><p class="article-content"><a href='#' onclick="Info('{{ claim.serviceCompany.id }}','{{ claim.serviceCompany }}', 'service_company', 'Сервисная компания')">{{ claim.serviceCompany }}</a></p></td>
+                                </tr>
+                            {% endif %}
+                         </tbody>
+                    {% endfor %}
+               </table>
+        {% else %}
+            <h2>Рекламации по Вашему запросу не найдены</h2>
+            </div>
+        {% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block popup %}
+<div class="popup">
+     <div class="showInfo" >
+        <div class="title_row" style="padding: 50px 0px 50px 0px;">
+            Tаблица с данными (выдача результата)<span id="tableName"></span>
+        </div>
+        <table class="tableVehicles" >
+            <tr style="background-color: #163E6C">
+                <td style="text-align: center;">id</td>
+                <td style="text-align: center;">Наименование</td>
+                <td style="text-align: center;">Описание</td>
+            </tr>
+            <tr>
+                <td class="id" style="text-align: center;"></td>
+                <td class="name" style="text-align: center;"></td>
+                <td class="description" style="text-align: center;"></td>
+            </tr>
+        </table>
+        <div class="tableChangeButtonsContainer">
+            <button class="table_button" id="closeInfoPanel">Close</button>
+        </div>
+     </div>
+</div>
+{% endblock %}
