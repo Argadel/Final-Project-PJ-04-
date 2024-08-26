@@ -32,8 +32,6 @@
 4. ООО "Ранский ЛПХ" (Client_4 / heV-KR9-m2K-phZ)
 5. ООО "Комплект-Поставка" (Client_5 / Stv-iVB-hkp-Gbi)
 6. ООО "РМК" (Client_6 / 5ps-87V-jdd-2Hw)
-<<<<<<< HEAD
 7. АО "Зандер" (Client_7 / i9Q-n6i-RGP-qYj)
-=======
-7. АО "Зандер" (Client_7 / i9Q-n6i-RGP-qYj)
->>>>>>> 78b3d44d9ae10a0c34348b0f501d6fc64dc63485
+
+
